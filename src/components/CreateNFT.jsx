@@ -6,14 +6,8 @@ import {
 } from '../store'
 import { useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
-import { create } from 'ipfs-http-client'
+import axios from 'axios'
 import { mintNFT, getAllNFTs } from '../Blockchain.Services'
-
-const client = create({
-  host: '127.0.0.1',
-  port: 5001,
-  protocol: 'http',
-})
 
 const CreateNFT = () => {
   const [modal] = useGlobalState('modal')
@@ -32,14 +26,38 @@ const CreateNFT = () => {
     setGlobalState('loading', { show: true, msg: 'Uploading IPFS data...' })
 
     try {
-      const created = await client.add(fileUrl)
-      const metadataURI = `http://127.0.0.1:8080/ipfs/${created.path}`
+      const formData = new FormData()
+      formData.append('file', fileUrl)
+
+      const metadata = JSON.stringify({
+        name: title,
+        keyvalues: {
+          pixelId: '2025',
+          pixelPrice: price,
+        }
+      })
+      formData.append('pinataMetadata', metadata)
+
+      const options = JSON.stringify({
+        cidVersion: 0,
+      })
+      formData.append('pinataOptions', options)
+
+      const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+          'pinata_api_key': process.env.REACT_APP_PINATA_API_KEY,
+          'pinata_secret_api_key': process.env.REACT_APP_PINATA_API_SECRET
+        }
+      });
+
+      const metadataURI = `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`
       const nft = { title, price, description, metadataURI }
 
       console.log('IPFS Uploaded. Metadata URI:', metadataURI)
 
       setLoadingMsg('Intializing transaction...')
-      setFileUrl(metadataURI)
+      // setFileUrl(metadataURI)
 
       console.log('Calling mintNFT...')
       const result = await mintNFT(nft)

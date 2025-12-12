@@ -5,10 +5,13 @@ const Marketplace = () => {
     const [nfts] = useGlobalState("nfts")
     const [connectedAccount] = useGlobalState("connectedAccount")
 
-    const ITEMS_PER_PAGE = 4
+    const ITEMS_PER_PAGE = 12
     const [currentPage, setCurrentPage] = useState(1)
     const [sortType, setSortType] = useState("none")
     const [selectedOwner, setSelectedOwner] = useState(null)
+    
+    // ⭐ SEARCH STATE
+    const [searchText, setSearchText] = useState("")
 
     const [collection, setCollection] = useState([])
 
@@ -18,12 +21,21 @@ const Marketplace = () => {
             (nft) => nft.owner?.toLowerCase() !== connectedAccount?.toLowerCase()
         )
 
+        // Lọc theo owner khi bấm vào owner
         if (selectedOwner) {
             data = data.filter(
                 (nft) => nft.owner?.toLowerCase() === selectedOwner.toLowerCase()
             )
         }
 
+        // ⭐ Lọc theo tên NFT
+        if (searchText.trim() !== "") {
+            data = data.filter(nft =>
+                nft.title.toLowerCase().includes(searchText.toLowerCase())
+            )
+        }
+
+        // Sort theo giá
         if (sortType === "asc")
             data = [...data].sort((a, b) => Number(a.cost) - Number(b.cost))
 
@@ -39,7 +51,7 @@ const Marketplace = () => {
         const start = (currentPage - 1) * ITEMS_PER_PAGE
         const end = start + ITEMS_PER_PAGE
         setCollection(data.slice(start, end))
-    }, [nfts, currentPage, sortType, selectedOwner, connectedAccount])
+    }, [nfts, currentPage, sortType, selectedOwner, searchText, connectedAccount])
 
     const totalItems = getFilteredNFTs().length
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE)
@@ -70,8 +82,22 @@ const Marketplace = () => {
                     </button>
                 )}
 
-                {/* Sort */}
-                <div className="flex justify-end my-3">
+                {/* ⭐ SEARCH + SORT */}
+                <div className="flex justify-between my-3">
+
+                    {/* SEARCH BAR */}
+                    <input
+                        type="text"
+                        placeholder="Search NFT by name..."
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md w-1/2 outline-none"
+                        value={searchText}
+                        onChange={(e) => {
+                            setSearchText(e.target.value)
+                            setCurrentPage(1)
+                        }}
+                    />
+
+                    {/* SORT */}
                     <select
                         onChange={(e) => {
                             setSortType(e.target.value)
@@ -95,8 +121,6 @@ const Marketplace = () => {
                 {/* ===== PHÂN TRANG ===== */}
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 mt-8">
-
-                        {/* Prev */}
                         <button
                             className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
                             disabled={currentPage === 1}
@@ -105,21 +129,20 @@ const Marketplace = () => {
                             ← Prev
                         </button>
 
-                        {/* Số trang */}
                         {[...Array(totalPages)].map((_, index) => (
                             <button
                                 key={index}
-                                className={`px-3 py-1 rounded ${currentPage === index + 1
-                                    ? "bg-white text-black"
-                                    : "bg-[#e32970] text-white"
-                                    }`}
+                                className={`px-3 py-1 rounded ${
+                                    currentPage === index + 1
+                                        ? "bg-white text-black"
+                                        : "bg-[#e32970] text-white"
+                                }`}
                                 onClick={() => setCurrentPage(index + 1)}
                             >
                                 {index + 1}
                             </button>
                         ))}
 
-                        {/* Next */}
                         <button
                             className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
                             disabled={currentPage === totalPages}
@@ -127,7 +150,6 @@ const Marketplace = () => {
                         >
                             Next →
                         </button>
-
                     </div>
                 )}
 
@@ -145,7 +167,7 @@ export const Card = ({ nft, setSelectedOwner }) => {
     }
 
     return (
-        <div className="w-full shadow-xl shadow-black rounded-md overflow-hidden bg-gray-800 p-3 my-2 flex flex-col h-[360px]">
+        <div className="w-full shadow-xl shadow-black rounded-md overflow-hidden bg-gray-800 p-3 my-2 flex flex-col h-[320px]">
 
             <img
                 src={nft.metadataURI}
@@ -160,7 +182,7 @@ export const Card = ({ nft, setSelectedOwner }) => {
                 style={{
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 3,
+                    WebkitLineClamp: 2,
                 }}
             >
                 {nft.description}
@@ -169,10 +191,10 @@ export const Card = ({ nft, setSelectedOwner }) => {
             <div className="mt-auto flex flex-col">
 
                 <div
-                    className="flex items-center gap-2 mb-2 cursor-pointer"
+                    className="flex items-center gap-2 cursor-pointer"
                     onClick={() => setSelectedOwner(nft.owner)}
                 >
-                   <p className="text-sm font-semibold text-white">Owner:</p>
+                    <p className="text-sm font-semibold text-white">Owner:</p>
                     <small className="text-pink-400 font-semibold">
                         {nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}
                     </small>

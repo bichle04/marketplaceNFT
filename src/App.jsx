@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { getAllNFTs, isWallectConnected } from './Blockchain.Services'
+
 import Alert from './components/Alert'
 import Artworks from './components/Artworks'
 import CreateNFT from './components/CreateNFT'
@@ -10,6 +12,8 @@ import Loading from './components/Loading'
 import ShowNFT from './components/ShowNFT'
 import Transactions from './components/Transactions'
 import UpdateNFT from './components/UpdateNFT'
+
+import Marketplace from './pages/Marketplace'
 
 const App = () => {
   useEffect(() => {
@@ -24,10 +28,23 @@ const App = () => {
     <div className="min-h-screen">
       <div className="gradient-bg-hero">
         <Header />
-        <Hero />
       </div>
-      <Artworks />
-      <Transactions />
+
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            <>
+              <Hero />
+              <Artworks />
+              <Transactions />
+            </>
+          } 
+        />
+
+        <Route path="/market" element={<Marketplace />} />
+      </Routes>
+
       <CreateNFT />
       <ShowNFT />
       <UpdateNFT />

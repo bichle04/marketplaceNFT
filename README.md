@@ -73,3 +73,7 @@ Access the [Teaching Guide Here](https://docs.google.com/document/d/13bBRyAO0bEw
 - 🎅 [Faucet](https://faucets.chain.link/rinkeby)
 - 🤖 [Ganache](https://trufflesuite.com/ganache/index.html)
 - ✨ [Live Demo](https://timelessnft-33dea.web.app/)
+
+
+npm install react-router-dom
+npm install -D @tailwindcss/line-clamp

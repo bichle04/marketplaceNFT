@@ -163,20 +163,35 @@ const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) =
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold">NFTs You Own</h2>
 
-                <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-1/3">
-                    <FiSearch className="text-gray-400 mr-2" />
-                    <input
-                        type="text"
-                        placeholder="Search your NFTs..."
-                        className="bg-transparent outline-none text-sm text-gray-300 w-full"
-                        value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value)
-                            setCurrentPage(1)
-                        }}
-                    />
+                {/* SEARCH + ADD BUTTON */}
+                <div className="flex items-center gap-3 w-1/2 justify-end">
+
+                    {/* SEARCH */}
+                    <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-2/3">
+                        <FiSearch className="text-gray-400 mr-2" />
+                        <input
+                            type="text"
+                            placeholder="Search your NFTs..."
+                            className="bg-transparent outline-none text-sm text-gray-300 w-full"
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value)
+                                setCurrentPage(1)
+                            }}
+                        />
+                    </div>
+
+                    {/* ADD NFT BUTTON */}
+                    <button
+                        onClick={() => setGlobalState("modal", "scale-100")}
+                        className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-full shadow"
+                    >
+                        + Add NFT
+                    </button>
+
                 </div>
             </div>
+
 
             {filteredNFTs.length === 0 ? (
                 <p className="text-gray-400">No NFTs found.</p>
@@ -204,8 +219,8 @@ const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) =
                                 <button
                                     key={i}
                                     className={`px-3 py-1 rounded ${currentPage === i + 1
-                                            ? "bg-white text-black"
-                                            : "bg-[#e32970] text-white"
+                                        ? "bg-white text-black"
+                                        : "bg-[#e32970] text-white"
                                         }`}
                                     onClick={() => setCurrentPage(i + 1)}
                                 >
@@ -289,32 +304,35 @@ const HistorySection = ({
                             className="p-5 bg-[#14171c] rounded-xl border border-gray-800 hover:border-pink-500 transition-all shadow-md"
                         >
                             {/* Title */}
-                            <h4 className="text-pink-400 font-semibold mb-1">
+                            <h4 className="text-pink-400 font-semibold mb-2">
                                 {tx.title} Transferred
                             </h4>
 
-                            {/* Received by */}
-                            <small className="text-gray-400 block">
-                                Received by{" "}
-                                <span className="text-pink-500">
-                                    {truncate(tx.owner || "", 4, 4, 11)}
-                                </span>
-                            </small>
+                            {/* Row: Received – Time – Cost */}
+                            <div className="flex justify-between items-center mt-2">
 
-                            {/* Timestamp */}
-                            <small className="text-gray-400 block mt-1">
-                                Time:{" "}
-                                <span className="text-pink-400">
-                                    {formatTime(tx.timestamp)}
-                                </span>
-                            </small>
+                                {/* Left: Received By */}
+                                <div className="text-gray-400 text-sm">
+                                    Received by{" "}
+                                    <span className="text-pink-500 font-semibold">
+                                        {truncate(tx.owner || "", 4, 4, 11)}
+                                    </span>
+                                </div>
 
-                            {/* Cost */}
-                            <p className="text-lg font-bold text-pink-500 mt-3">
-                                {tx.cost} ETH
-                            </p>
+                                {/* Middle: Time */}
+                                <div className="text-gray-400 text-sm">
+                                    <span className="text-pink-400">{formatTime(tx.timestamp)}</span>
+                                </div>
+
+                                {/* Right: Cost */}
+                                <div className="text-pink-500 text-lg font-bold">
+                                    {tx.cost} ETH
+                                </div>
+
+                            </div>
                         </div>
                     ))}
+
                 </div>
             )}
         </div>

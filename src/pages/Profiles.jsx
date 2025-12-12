@@ -11,7 +11,7 @@ const Profile = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const ITEMS_PER_PAGE = 4
     const [currentPage, setCurrentPage] = useState(1)
-    
+
 
 
     // Filter & Search states for History
@@ -19,17 +19,17 @@ const Profile = () => {
     const [filterType, setFilterType] = useState("all")
 
     useEffect(() => {
-    if (!connectedAccount || nfts.length === 0) return
+        if (!connectedAccount || nfts.length === 0) return
 
-    const owned = nfts.filter(
-        (nft) =>
-            nft.owner?.toLowerCase() === connectedAccount.toLowerCase() ||
-            nft.creator?.toLowerCase() === connectedAccount.toLowerCase()
-    )
+        const owned = nfts.filter(
+            (nft) =>
+                nft.owner?.toLowerCase() === connectedAccount.toLowerCase() ||
+                nft.creator?.toLowerCase() === connectedAccount.toLowerCase()
+        )
 
-    setMyNFTs(owned)
-      setCurrentPage(1) 
-}, [connectedAccount, nfts])
+        setMyNFTs(owned)
+        setCurrentPage(1)
+    }, [connectedAccount, nfts])
 
 
     return (
@@ -54,8 +54,8 @@ const Profile = () => {
                 <button
                     onClick={() => setActiveTab("myNFT")}
                     className={`px-5 py-2 rounded-full transition-all ${activeTab === "myNFT"
-                            ? "bg-pink-600 text-white shadow-lg"
-                            : "bg-[#1a1d22] text-gray-300 hover:bg-gray-700"
+                        ? "bg-pink-600 text-white shadow-lg"
+                        : "bg-[#1a1d22] text-gray-300 hover:bg-gray-700"
                         }`}
                 >
                     My NFT
@@ -64,8 +64,8 @@ const Profile = () => {
                 <button
                     onClick={() => setActiveTab("history")}
                     className={`px-5 py-2 rounded-full transition-all ${activeTab === "history"
-                            ? "bg-pink-600 text-white shadow-lg"
-                            : "bg-[#1a1d22] text-gray-300 hover:bg-gray-700"
+                        ? "bg-pink-600 text-white shadow-lg"
+                        : "bg-[#1a1d22] text-gray-300 hover:bg-gray-700"
                         }`}
                 >
                     History
@@ -96,76 +96,6 @@ const Profile = () => {
 }
 
 export default Profile
-
-/* ---------------------------------------------------------
-   SECTION: My NFT (UI nâng cấp)
---------------------------------------------------------- */
-
-const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) => {
-  const totalPages = Math.ceil(myNFTs.length / ITEMS_PER_PAGE)
-  const start = (currentPage - 1) * ITEMS_PER_PAGE
-  const end = start + ITEMS_PER_PAGE
-  const pageNFTs = myNFTs.slice(start, end)
-
-  return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-6">NFTs You Own</h2>
-
-      {myNFTs.length === 0 ? (
-        <p className="text-gray-400">You don’t own any NFT.</p>
-      ) : (
-        <>
-          {/* NFT List */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-7">
-            {pageNFTs.map((nft, index) => (
-              <NFTCard key={index} nft={nft} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8">
-
-              {/* Prev */}
-              <button
-                className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-              >
-                ← Prev
-              </button>
-
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === i + 1
-                      ? "bg-white text-black"
-                      : "bg-[#e32970] text-white"
-                  }`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              {/* Next */}
-              <button
-                className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-              >
-                Next →
-              </button>
-
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  )
-}
 
 
 /* ---------------------------------------------------------
@@ -209,93 +139,184 @@ const NFTCard = ({ nft }) => {
     )
 }
 
+
+/* ---------------------------------------------------------
+   SECTION: My NFT (UI nâng cấp)
+--------------------------------------------------------- */
+const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) => {
+    const [searchTerm, setSearchTerm] = useState("")
+
+    // Lọc NFT theo từ khóa
+    const filteredNFTs = myNFTs.filter((nft) =>
+        nft.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        nft.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    const totalPages = Math.ceil(filteredNFTs.length / ITEMS_PER_PAGE)
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    const end = start + ITEMS_PER_PAGE
+    const pageNFTs = filteredNFTs.slice(start, end)
+
+    return (
+        <div>
+            {/* Title + Search in one row */}
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">NFTs You Own</h2>
+
+                <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-1/3">
+                    <FiSearch className="text-gray-400 mr-2" />
+                    <input
+                        type="text"
+                        placeholder="Search your NFTs..."
+                        className="bg-transparent outline-none text-sm text-gray-300 w-full"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value)
+                            setCurrentPage(1)
+                        }}
+                    />
+                </div>
+            </div>
+
+            {filteredNFTs.length === 0 ? (
+                <p className="text-gray-400">No NFTs found.</p>
+            ) : (
+                <>
+                    {/* NFT List */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-7">
+                        {pageNFTs.map((nft, index) => (
+                            <NFTCard key={index} nft={nft} />
+                        ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-8">
+                            <button
+                                className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage((p) => p - 1)}
+                            >
+                                ← Prev
+                            </button>
+
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    className={`px-3 py-1 rounded ${currentPage === i + 1
+                                            ? "bg-white text-black"
+                                            : "bg-[#e32970] text-white"
+                                        }`}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+
+                            <button
+                                className="px-3 py-1 rounded bg-[#e32970] text-white disabled:opacity-40"
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage((p) => p + 1)}
+                            >
+                                Next →
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+        </div>
+    )
+}
+
+
+
 /* ---------------------------------------------------------
    HISTORY: Show all transfers related to user (old style)
 --------------------------------------------------------- */
 
 const HistorySection = ({
-  transactions,
-  connectedAccount,
-  searchTerm,
-  setSearchTerm,
+    transactions,
+    connectedAccount,
+    searchTerm,
+    setSearchTerm,
 }) => {
 
-  const account = connectedAccount?.toLowerCase()
+    const account = connectedAccount?.toLowerCase()
 
-  /* Chỉ lấy giao dịch liên quan đến bản thân */
-  const userTx = transactions.filter((tx) => {
-    const owner = tx.owner?.toLowerCase()
-    const prev = tx.previousOwner?.toLowerCase()
+    /* Chỉ lấy giao dịch liên quan đến bản thân */
+    const userTx = transactions.filter((tx) => {
+        const owner = tx.owner?.toLowerCase()
+        const prev = tx.previousOwner?.toLowerCase()
 
-    return owner === account || prev === account
-  })
+        return owner === account || prev === account
+    })
 
-  /* Format ngày giờ */
-  const formatTime = (timestamp) =>
-    new Date(timestamp * 1000).toLocaleString()
+    /* Format ngày giờ */
+    const formatTime = (timestamp) =>
+        new Date(timestamp * 1000).toLocaleString()
 
-  /* Search theo title */
-  const filtered = userTx.filter((tx) =>
-    tx.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    /* Search theo title */
+    const filtered = userTx.filter((tx) =>
+        tx.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
-  return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-6">Transaction History</h2>
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Transaction History</h2>
 
-      {/* SEARCH */}
-      <div className="flex items-center mb-6">
-        <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-1/2">
-          <FiSearch className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search transactions..."
-            className="bg-transparent outline-none text-sm text-gray-300 w-full"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* LIST */}
-      {filtered.length === 0 ? (
-        <p className="text-gray-400">No transactions found.</p>
-      ) : (
-        <div className="space-y-5">
-          {filtered.map((tx) => (
-            <div
-              key={tx.id + "-" + tx.timestamp}
-              className="p-5 bg-[#14171c] rounded-xl border border-gray-800 hover:border-pink-500 transition-all shadow-md"
-            >
-              {/* Title */}
-              <h4 className="text-pink-400 font-semibold mb-1">
-                {tx.title} Transferred
-              </h4>
-
-              {/* Received by */}
-              <small className="text-gray-400 block">
-                Received by{" "}
-                <span className="text-pink-500">
-                  {truncate(tx.owner || "", 4, 4, 11)}
-                </span>
-              </small>
-
-              {/* Timestamp */}
-              <small className="text-gray-400 block mt-1">
-                Time:{" "}
-                <span className="text-pink-400">
-                  {formatTime(tx.timestamp)}
-                </span>
-              </small>
-
-              {/* Cost */}
-              <p className="text-lg font-bold text-pink-500 mt-3">
-                {tx.cost} ETH
-              </p>
+                <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-1/3">
+                    <FiSearch className="text-gray-400 mr-2" />
+                    <input
+                        type="text"
+                        placeholder="Search transactions..."
+                        className="bg-transparent outline-none text-sm text-gray-300 w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
             </div>
-          ))}
+
+
+            {/* LIST */}
+            {filtered.length === 0 ? (
+                <p className="text-gray-400">No transactions found.</p>
+            ) : (
+                <div className="space-y-5">
+                    {filtered.map((tx) => (
+                        <div
+                            key={tx.id + "-" + tx.timestamp}
+                            className="p-5 bg-[#14171c] rounded-xl border border-gray-800 hover:border-pink-500 transition-all shadow-md"
+                        >
+                            {/* Title */}
+                            <h4 className="text-pink-400 font-semibold mb-1">
+                                {tx.title} Transferred
+                            </h4>
+
+                            {/* Received by */}
+                            <small className="text-gray-400 block">
+                                Received by{" "}
+                                <span className="text-pink-500">
+                                    {truncate(tx.owner || "", 4, 4, 11)}
+                                </span>
+                            </small>
+
+                            {/* Timestamp */}
+                            <small className="text-gray-400 block mt-1">
+                                Time:{" "}
+                                <span className="text-pink-400">
+                                    {formatTime(tx.timestamp)}
+                                </span>
+                            </small>
+
+                            {/* Cost */}
+                            <p className="text-lg font-bold text-pink-500 mt-3">
+                                {tx.cost} ETH
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  )
+    )
 }

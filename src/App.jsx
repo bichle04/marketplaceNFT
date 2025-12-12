@@ -14,6 +14,8 @@ import Transactions from './components/Transactions'
 import UpdateNFT from './components/UpdateNFT'
 
 import Marketplace from './pages/Marketplace'
+import Profiles from './pages/Profiles'
+
 
 const App = () => {
   useEffect(() => {
@@ -25,7 +27,7 @@ const App = () => {
   }, [])
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0d0f13]">
       <div className="gradient-bg-hero">
         <Header />
       </div>
@@ -43,6 +45,7 @@ const App = () => {
         />
 
         <Route path="/market" element={<Marketplace />} />
+        <Route path="/profile" element={<Profiles />} />
       </Routes>
 
       <CreateNFT />

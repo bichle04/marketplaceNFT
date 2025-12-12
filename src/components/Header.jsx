@@ -22,9 +22,20 @@ const Header = () => {
       </ul>
 
       {connectedAccount ? (
-        <button className="shadow-xl shadow-black text-white bg-[#e32970] hover:bg-[#bd255f] md:text-xs p-2 rounded-full cursor-pointer">
-          {truncate(connectedAccount, 4, 4, 11)}
-        </button>
+        <Link
+          to="/profile"
+          className="flex items-center gap-2 shadow-xl shadow-black 
+               bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-full cursor-pointer"
+        >
+          <img
+            src={`https://api.dicebear.com/9.x/identicon/svg?seed=${connectedAccount}`}
+            alt="avatar"
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-white md:text-xs">
+            {truncate(connectedAccount, 4, 4, 11)}
+          </span>
+        </Link>
       ) : (
         <button
           className="shadow-xl shadow-black text-white bg-[#e32970] hover:bg-[#bd255f] md:text-xs p-2 rounded-full cursor-pointer"

@@ -1,4 +1,4 @@
-import { setGlobalState } from "../../store"
+import { setGlobalState } from "../store"
 
 const NFTCard = ({ nft, onOwnerClick, actionButtonText = "View Details", onAction, isAuction }) => {
 
@@ -73,8 +73,8 @@ const NFTCard = ({ nft, onOwnerClick, actionButtonText = "View Details", onActio
                     <button
                         onClick={handleAction}
                         className={`px-4 py-1.5 rounded-full text-white text-sm shadow transition-colors ${isAuctionExpired
-                                ? 'bg-red-600 hover:bg-red-700'
-                                : 'bg-pink-600 hover:bg-pink-700'
+                            ? 'bg-red-600 hover:bg-red-700'
+                            : 'bg-pink-600 hover:bg-pink-700'
                             }`}
                     >
                         {isAuctionExpired ? "Finalize" : actionButtonText}

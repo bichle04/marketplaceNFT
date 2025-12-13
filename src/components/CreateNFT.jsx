@@ -16,6 +16,7 @@ const CreateNFT = () => {
   const [description, setDescription] = useState('')
   const [fileUrl, setFileUrl] = useState('')
   const [imgBase64, setImgBase64] = useState(null)
+  const [isBlindBox, setIsBlindBox] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -52,7 +53,7 @@ const CreateNFT = () => {
       });
 
       const metadataURI = `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`
-      const nft = { title, price, description, metadataURI }
+      const nft = { title, price, description, metadataURI, isBlindBox }
 
       console.log('IPFS Uploaded. Metadata URI:', metadataURI)
 
@@ -103,6 +104,7 @@ const CreateNFT = () => {
     setTitle('')
     setPrice('')
     setDescription('')
+    setIsBlindBox(false)
   }
 
   return (
@@ -198,6 +200,19 @@ const CreateNFT = () => {
               value={description}
               required
             ></textarea>
+          </div>
+
+          <div className="flex flex-row items-center mt-5 ml-2">
+            <input
+              type="checkbox"
+              id="isBlindBox"
+              className="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500"
+              onChange={(e) => setIsBlindBox(e.target.checked)}
+              checked={isBlindBox}
+            />
+            <label htmlFor="isBlindBox" className="ml-2 text-sm font-medium text-gray-400">
+              Mint as Blind Box? (Mystery Box)
+            </label>
           </div>
 
           <button

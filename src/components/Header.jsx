@@ -1,10 +1,15 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import timelessLogo from '../assets/timeless.png'
 import { connectWallet } from '../Blockchain.Services'
 import { useGlobalState, truncate } from '../store'
 
 const Header = () => {
   const [connectedAccount] = useGlobalState('connectedAccount')
+  const location = useLocation()
+
+  const isActive = (path) => {
+    return location.pathname === path ? 'text-[#e32970] font-bold border-b-2 border-[#e32970]' : 'text-white hover:text-[#e32970]'
+  }
 
   return (
     <nav className="w-4/5 flex md:justify-center justify-between items-center py-4 mx-auto">
@@ -15,10 +20,18 @@ const Header = () => {
       </div>
 
       <ul className="md:flex-[0.5] text-white md:flex hidden list-none flex-row justify-between items-center">
-        <li className="mx-4 cursor-pointer"><Link to="/market">Market</Link></li>
-        <li className="mx-4 cursor-pointer">Artist</li>
-        <li className="mx-4 cursor-pointer">Features</li>
-        <li className="mx-4 cursor-pointer">Community</li>
+        <li className={`mx-4 cursor-pointer ${isActive('/')}`}>
+          <Link to="/">Home</Link>
+        </li>
+        <li className={`mx-4 cursor-pointer ${isActive('/market')}`}>
+          <Link to="/market">Market</Link>
+        </li>
+        <li className={`mx-4 cursor-pointer ${isActive('/auctions')}`}>
+          <Link to="/auctions">Auctions</Link>
+        </li>
+        <li className={`mx-4 cursor-pointer ${isActive('/mystery-box')}`}>
+          <Link to="/mystery-box">Mystery Box</Link>
+        </li>
       </ul>
 
       {connectedAccount ? (

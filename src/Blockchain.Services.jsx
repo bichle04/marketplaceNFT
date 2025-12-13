@@ -201,11 +201,11 @@ const endAuction = async ({ id }) => {
   }
 }
 
-const revealBlindBox = async ({ id, newURI }) => {
+const revealBlindBox = async ({ id }) => {
   try {
     const contract = await getEtheriumContract()
     const account = getGlobalState('connectedAccount')
-    await contract.methods.revealBox(Number(id), newURI).send({ from: account })
+    await contract.methods.revealBox(Number(id)).send({ from: account })
     return true
   } catch (error) {
     reportError(error)

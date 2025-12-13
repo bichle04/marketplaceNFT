@@ -19,7 +19,9 @@ const Header = () => {
         <li className="mx-4 cursor-pointer">Artist</li>
         <li className="mx-4 cursor-pointer">Features</li>
         <li className="mx-4 cursor-pointer">Community</li>
-        <li className="mx-4 cursor-pointer text-[#e32970] font-bold">Mystery Box</li>
+        <li className="mx-4 cursor-pointer text-[#e32970] font-bold">
+          <Link to="/mystery-box">Mystery Box</Link>
+        </li>
       </ul>
 
       {connectedAccount ? (

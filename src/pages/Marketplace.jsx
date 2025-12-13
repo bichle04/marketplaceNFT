@@ -9,7 +9,7 @@ const Marketplace = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [sortType, setSortType] = useState("none")
     const [selectedOwner, setSelectedOwner] = useState(null)
-    
+
     // ⭐ SEARCH STATE
     const [searchText, setSearchText] = useState("")
 
@@ -18,7 +18,7 @@ const Marketplace = () => {
     // ===== GET DATA CHO MARKETPLACE HOẶC OWNER =====
     const getFilteredNFTs = () => {
         let data = nfts.filter(
-            (nft) => nft.owner?.toLowerCase() !== connectedAccount?.toLowerCase()
+            (nft) => nft.owner?.toLowerCase() !== connectedAccount?.toLowerCase() && !nft.isBlindBox
         )
 
         // Lọc theo owner khi bấm vào owner
@@ -132,11 +132,10 @@ const Marketplace = () => {
                         {[...Array(totalPages)].map((_, index) => (
                             <button
                                 key={index}
-                                className={`px-3 py-1 rounded ${
-                                    currentPage === index + 1
+                                className={`px-3 py-1 rounded ${currentPage === index + 1
                                         ? "bg-white text-black"
                                         : "bg-[#e32970] text-white"
-                                }`}
+                                    }`}
                                 onClick={() => setCurrentPage(index + 1)}
                             >
                                 {index + 1}

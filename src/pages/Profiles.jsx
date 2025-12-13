@@ -9,6 +9,7 @@ const Profile = () => {
 
     const [activeTab, setActiveTab] = useState("myNFT")
     const [myNFTs, setMyNFTs] = useState([])
+    const [myBlindBoxes, setMyBlindBoxes] = useState([])
     const ITEMS_PER_PAGE = 4
     const [currentPage, setCurrentPage] = useState(1)
 
@@ -21,13 +22,22 @@ const Profile = () => {
     useEffect(() => {
         if (!connectedAccount || nfts.length === 0) return
 
+        const account = connectedAccount.toLowerCase()
+
         const owned = nfts.filter(
             (nft) =>
-                nft.owner?.toLowerCase() === connectedAccount.toLowerCase() ||
-                nft.creator?.toLowerCase() === connectedAccount.toLowerCase()
+                (nft.owner?.toLowerCase() === account ||
+                    nft.creator?.toLowerCase() === account) && !nft.isBlindBox
+        )
+
+        const boxes = nfts.filter(
+            (nft) =>
+                (nft.owner?.toLowerCase() === account ||
+                    nft.creator?.toLowerCase() === account) && nft.isBlindBox
         )
 
         setMyNFTs(owned)
+        setMyBlindBoxes(boxes)
         setCurrentPage(1)
     }, [connectedAccount, nfts])
 
@@ -62,6 +72,16 @@ const Profile = () => {
                 </button>
 
                 <button
+                    onClick={() => setActiveTab("mysteryBox")}
+                    className={`px-5 py-2 rounded-full transition-all ${activeTab === "mysteryBox"
+                        ? "bg-pink-600 text-white shadow-lg"
+                        : "bg-[#1a1d22] text-gray-300 hover:bg-gray-700"
+                        }`}
+                >
+                    Mystery Box
+                </button>
+
+                <button
                     onClick={() => setActiveTab("history")}
                     className={`px-5 py-2 rounded-full transition-all ${activeTab === "history"
                         ? "bg-pink-600 text-white shadow-lg"
@@ -79,8 +99,17 @@ const Profile = () => {
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                    title="NFTs You Own"
                 />
 
+            ) : activeTab === "mysteryBox" ? (
+                <MyNFTSection
+                    myNFTs={myBlindBoxes}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    ITEMS_PER_PAGE={ITEMS_PER_PAGE}
+                    title="My Mystery Boxes"
+                />
             ) : (
                 <HistorySection
                     transactions={transactions}
@@ -111,9 +140,9 @@ const NFTCard = ({ nft }) => {
     return (
         <div className="bg-[#14171c] rounded-xl p-4 shadow-xl hover:shadow-pink-500/30 transition-all border border-gray-800 hover:border-pink-500 cursor-pointer flex flex-col h-[400px]">
             <img
-                src={nft.metadataURI}
+                src={nft.isBlindBox ? 'https://images.unsplash.com/photo-1632213702844-1e0615781374?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80' : nft.metadataURI}
                 alt={nft.title}
-                className="h-48 w-full object-cover rounded-lg mb-4"
+                className={`h-48 w-full object-cover rounded-lg mb-4 ${nft.isBlindBox ? 'blur-sm grayscale' : ''}`}
             />
 
             <h3 className="text-lg font-semibold">{nft.title}</h3>
@@ -143,7 +172,7 @@ const NFTCard = ({ nft }) => {
 /* ---------------------------------------------------------
    SECTION: My NFT (UI nâng cấp)
 --------------------------------------------------------- */
-const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) => {
+const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE, title }) => {
     const [searchTerm, setSearchTerm] = useState("")
 
     // Lọc NFT theo từ khóa
@@ -161,7 +190,7 @@ const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE }) =
         <div>
             {/* Title + Search in one row */}
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">NFTs You Own</h2>
+                <h2 className="text-2xl font-semibold">{title}</h2>
 
                 {/* SEARCH + ADD BUTTON */}
                 <div className="flex items-center gap-3 w-1/2 justify-end">

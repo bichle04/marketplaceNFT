@@ -137,13 +137,12 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
     }
 
     // Feature: Reveal Blind Box
-    function revealBox(uint256 id, string memory newURI) external {
+    function revealBox(uint256 id) external {
         require(msg.sender == minted[id - 1].owner, "Only owner can reveal");
         require(isBlindBox[id], "Not a blind box");
 
         isBlindBox[id] = false;
-        minted[id - 1].metadataURI = newURI; // Update in struct
-        // Note: standard tokenURI update depends on implementation, here we rely on struct
+        // minted[id - 1].metadataURI = newURI; // No longer overwriting URI
     }
 
     function payToBuy(uint256 id) external payable {

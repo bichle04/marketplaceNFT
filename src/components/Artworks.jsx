@@ -8,7 +8,7 @@ const Artworks = () => {
   const [collection, setCollection] = useState([])
 
   const getCollection = () => {
-    return nfts.slice(0, end)
+    return nfts.filter(nft => !nft.isBlindBox).slice(0, end)
   }
 
   useEffect(() => {

@@ -90,10 +90,8 @@ const ShowNFT = () => {
 
   const handleReveal = async () => {
     setGlobalState('loading', { show: true, msg: 'Revealing Mystery Box...' })
-    // Pseudo-random URI for demo
-    const rareURI = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=1364&q=80"
     try {
-      await revealBlindBox({ id: nft.id, newURI: rareURI })
+      await revealBlindBox({ id: nft.id })
       setAlert('Revealed!', 'green')
       window.location.reload()
     } catch (error) {

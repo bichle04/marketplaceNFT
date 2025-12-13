@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom'
-import timelessLogo from '../assets/timeless.png'
 import { connectWallet } from '../Blockchain.Services'
 import { useGlobalState, truncate } from '../store'
 
@@ -15,7 +14,9 @@ const Header = () => {
     <nav className="w-4/5 flex md:justify-center justify-between items-center py-4 mx-auto">
       <div className="md:flex-[0.5] flex-initial justify-center items-center">
         <Link to="/">
-          <img className="w-32 cursor-pointer" src={timelessLogo} alt="Timeless Logo" />
+          <h1 className="text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            ObsidianVerse
+          </h1>
         </Link>
       </div>
 

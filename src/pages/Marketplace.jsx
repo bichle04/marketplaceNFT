@@ -5,7 +5,7 @@ const Marketplace = () => {
     const [nfts] = useGlobalState("nfts")
     const [connectedAccount] = useGlobalState("connectedAccount")
 
-    const ITEMS_PER_PAGE = 12
+    const ITEMS_PER_PAGE = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [sortType, setSortType] = useState("none")
     const [selectedOwner, setSelectedOwner] = useState(null)

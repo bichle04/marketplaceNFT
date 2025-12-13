@@ -109,8 +109,8 @@ const AuctionPage = () => {
                             <button
                                 key={index}
                                 className={`px-3 py-1 rounded ${currentPage === index + 1
-                                        ? "bg-white text-black"
-                                        : "bg-[#e32970] text-white"
+                                    ? "bg-white text-black"
+                                    : "bg-[#e32970] text-white"
                                     }`}
                                 onClick={() => setCurrentPage(index + 1)}
                             >

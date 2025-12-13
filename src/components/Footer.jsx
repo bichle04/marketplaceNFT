@@ -1,11 +1,12 @@
-import timelessLogo from '../assets/timeless.png'
 import { Link } from 'react-router-dom'
 
 const Footer = () => (
   <div className="w-full flex flex-col justify-between md:justify-center items-center gradient-bg-footer p-4">
     <div className="w-full flex sm:flex-row flex-col justify-between items-center my-4">
       <div className="flex flex-[0.25] justify-center items-center">
-        <img src={timelessLogo} alt="logo" className="w-32" />
+        <h2 className="text-xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+          ObsidianVerse
+        </h2>
       </div>
 
       <div className="flex flex-1 justify-evenly items-center flex-wrap sm:mt-0 mt-5 w-full text-white text-base text-center">
@@ -17,7 +18,7 @@ const Footer = () => (
 
       <div className="flex flex-[0.25] justify-center items-center">
         <p className="text-white text-right text-xs">
-          &copy; 2025 Timeless NFTs
+          &copy; 2025 ObsidianVerse
         </p>
       </div>
     </div>

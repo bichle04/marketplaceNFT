@@ -11,7 +11,7 @@ const Profile = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [myBlindBoxes, setMyBlindBoxes] = useState([])
     const [myAuctions, setMyAuctions] = useState([])
-    const ITEMS_PER_PAGE = 4
+    const ITEMS_PER_PAGE = 20
     const [currentPage, setCurrentPage] = useState(1)
 
 
@@ -165,13 +165,26 @@ const NFTCard = ({ nft }) => {
         setGlobalState("showModal", "scale-100")
     }
 
+    const isAuctionExpired = nft.auction?.started && new Date().getTime() > nft.auction.endAt * 1000
+
     return (
-        <div className="bg-[#14171c] rounded-xl p-4 shadow-xl hover:shadow-pink-500/30 transition-all border border-gray-800 hover:border-pink-500 cursor-pointer flex flex-col h-[400px]">
-            <img
-                src={nft.isBlindBox ? 'https://images.unsplash.com/photo-1632213702844-1e0615781374?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80' : nft.metadataURI}
-                alt={nft.title}
-                className={`h-48 w-full object-cover rounded-lg mb-4 ${nft.isBlindBox ? 'blur-sm grayscale' : ''}`}
-            />
+        <div className={`bg-[#14171c] rounded-xl p-4 shadow-xl transition-all border cursor-pointer flex flex-col h-[400px] 
+            ${isAuctionExpired ? 'border-red-500 shadow-red-500/40' : 'border-gray-800 hover:border-pink-500 hover:shadow-pink-500/30'}`}>
+
+            <div className="relative">
+                <img
+                    src={nft.isBlindBox ? 'https://images.unsplash.com/photo-1632213702844-1e0615781374?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80' : nft.metadataURI}
+                    alt={nft.title}
+                    className={`h-48 w-full object-cover rounded-lg mb-4 ${nft.isBlindBox ? 'blur-sm grayscale' : ''}`}
+                />
+
+                {/* Expired Badge */}
+                {isAuctionExpired && (
+                    <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">
+                        ⚠️ Action Needed
+                    </div>
+                )}
+            </div>
 
             <h3 className="text-lg font-semibold">{nft.title}</h3>
 
@@ -181,15 +194,19 @@ const NFTCard = ({ nft }) => {
 
             <div className="mt-auto flex justify-between items-center pt-3">
                 <div>
-                    <small className="text-gray-400">Price</small>
+                    {isAuctionExpired ? (
+                        <small className="text-red-500 font-bold">Ended</small>
+                    ) : (
+                        <small className="text-gray-400">Price</small>
+                    )}
                     <p className="font-bold text-pink-400">{nft.cost} ETH</p>
                 </div>
 
                 <button
                     onClick={openDetails}
-                    className="px-4 py-1 rounded-full bg-pink-600 hover:bg-pink-700 text-white text-sm shadow"
+                    className={`px-4 py-1 rounded-full text-white text-sm shadow ${isAuctionExpired ? 'bg-red-600 hover:bg-red-700' : 'bg-pink-600 hover:bg-pink-700'}`}
                 >
-                    View
+                    {isAuctionExpired ? "Finalize" : "View"}
                 </button>
             </div>
         </div>
@@ -325,7 +342,7 @@ const HistorySection = ({
         // Transfer: owner = recipient. 
         // We need to match current user.
         return tx.owner?.toLowerCase() === account || (tx.msg === 'Transfer' && tx.owner !== account) // Logic is tricky without 'from' in struct for transfer. 
-        // Wait, TimelessNFT.sol TransactionStruct doesn't have 'from'. 
+        // Wait, ObsidianVerse.sol TransactionStruct doesn't have 'from'. 
         // It has 'owner' (which is 'who paid/received it').
         // For Transfer, 'owner' is recipient 'to'. Who is sender? Struct doesn't save sender explicitly for Transfer?
         // Let's check struct: owner, cost, title...
@@ -335,7 +352,7 @@ const HistorySection = ({
         // If I am the SENDER of a transfer, looking at this history, I see "Owner: Recipient".
         // But how do I know I was the sender?
         // WE MIGHT NOT KNOW I AM THE SENDER if the Struct doesn't store it.
-        // CHECK TimelessNFT.sol TransactionStruct.
+        // CHECK ObsidianVerse.sol TransactionStruct.
         // Struct: id, tokenId, owner, cost... msg.
         // It does NOT have 'from' or 'seller'.
         // THIS IS A LIMITATION.

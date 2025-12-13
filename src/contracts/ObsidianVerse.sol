@@ -5,7 +5,7 @@ import "./ERC721.sol";
 import "./ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TimelessNFT is ERC721Enumerable, Ownable {
+contract ObsidianVerse is ERC721Enumerable, Ownable {
     using Strings for uint256;
     mapping(string => uint8) existingURIs;
     mapping(uint256 => address) public holderOf;

@@ -221,27 +221,24 @@ const MyNFTSection = ({ myNFTs, currentPage, setCurrentPage, ITEMS_PER_PAGE, tit
                 <h2 className="text-2xl font-semibold">{title}</h2>
 
                 {/* SEARCH + ADD BUTTON */}
-                <div className="flex items-center gap-3 w-1/2 justify-end">
+                <div className="flex items-center gap-4 w-3/4 justify-end">
 
                     {/* SEARCH */}
-                    <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-2/3">
-                        <FiSearch className="text-gray-400 mr-2" />
-                        <input
-                            type="text"
-                            placeholder="Search your NFTs..."
-                            className="bg-transparent outline-none text-sm text-gray-300 w-full"
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value)
-                                setCurrentPage(1)
-                            }}
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search your NFTs..."
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md w-1/2 outline-none"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value)
+                            setCurrentPage(1)
+                        }}
+                    />
 
                     {/* ADD NFT BUTTON */}
                     <button
                         onClick={() => setGlobalState("modal", "scale-100")}
-                        className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-full shadow"
+                        className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-full shadow shrink-0"
                     >
                         + Add NFT
                     </button>
@@ -311,6 +308,8 @@ const HistorySection = ({
     connectedAccount,
     searchTerm,
     setSearchTerm,
+    filterType,
+    setFilterType,
 }) => {
 
     const account = connectedAccount?.toLowerCase()
@@ -380,25 +379,40 @@ const HistorySection = ({
     const formatTime = (timestamp) =>
         new Date(timestamp * 1000).toLocaleString()
 
-    /* Search theo title */
-    const filtered = userTx.filter((tx) =>
-        tx.title?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    /* Search theo title & Filter Type */
+    const filtered = userTx.filter((tx) => {
+        const matchesSearch = tx.title?.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesFilter = filterType === 'all' || tx.msg === filterType
+        return matchesSearch && matchesFilter
+    })
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold">Transaction History</h2>
 
-                <div className="flex items-center bg-[#1a1d22] border border-gray-700 rounded-full px-4 py-2 w-1/3">
-                    <FiSearch className="text-gray-400 mr-2" />
+                <div className="flex items-center gap-6 w-3/4 justify-end">
+                    {/* SEARCH INPUT - 50% width */}
                     <input
                         type="text"
                         placeholder="Search transactions..."
-                        className="bg-transparent outline-none text-sm text-gray-300 w-full"
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md w-1/2 outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+
+                    {/* FILTER DROPDOWN */}
+                    <select
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md outline-none shrink-0"
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                    >
+                        <option value="all">All Types</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Minted">Minted</option>
+                        <option value="Transfer">Transfer</option>
+                        <option value="Auction Won">Auction Won</option>
+                    </select>
                 </div>
             </div>
 

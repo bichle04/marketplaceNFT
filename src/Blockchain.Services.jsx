@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 import { setGlobalState, getGlobalState, setAlert } from './store'
-import abi from './abis/TimelessNFT.json'
+import abi from './abis/ObsidianVerse.json'
 
 const { ethereum } = window
 window.web3 = new Web3(ethereum)

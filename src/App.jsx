@@ -1,23 +1,20 @@
 import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { getAllNFTs, isWallectConnected } from './Blockchain.Services'
-
-import Alert from './components/Alert'
-import Artworks from './components/Artworks'
-import CreateNFT from './components/CreateNFT'
-import Footer from './components/Footer'
 import Header from './components/Header'
-import Hero from './components/Hero'
+import Footer from './components/Footer'
+import Alert from './components/Alert'
 import Loading from './components/Loading'
+import CreateNFT from './components/CreateNFT'
 import ShowNFT from './components/ShowNFT'
-import Transactions from './components/Transactions'
 import UpdateNFT from './components/UpdateNFT'
-
 import Marketplace from './pages/Marketplace'
 import Profiles from './pages/Profiles'
 import MysteryBox from './pages/MysteryBox'
 import AuctionPage from './pages/AuctionPage'
+import Home from './pages/Home'
 
+import { ROUTES } from './constants'
 
 const App = () => {
   useEffect(() => {
@@ -29,35 +26,29 @@ const App = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#0d0f13]">
+    <div className="min-h-screen bg-[#0d0f13] flex flex-col">
       <div className="gradient-bg-hero">
         <Header />
       </div>
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <Artworks />
-              <Transactions />
-            </>
-          }
-        />
+      {/* Main Content */}
+      <div className="flex-grow">
+        <Routes>
+          <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.MARKETPLACE} element={<Marketplace />} />
+          <Route path={ROUTES.AUCTIONS} element={<AuctionPage />} />
+          <Route path={ROUTES.PROFILE} element={<Profiles />} />
+          <Route path={ROUTES.MYSTERY_BOX} element={<MysteryBox />} />
+        </Routes>
+      </div>
 
-        <Route path="/market" element={<Marketplace />} />
-        <Route path="/auctions" element={<AuctionPage />} />
-        <Route path="/profile" element={<Profiles />} />
-        <Route path="/mystery-box" element={<MysteryBox />} />
-      </Routes>
+      <Footer />
 
+      <Alert />
+      <Loading />
       <CreateNFT />
       <ShowNFT />
       <UpdateNFT />
-      <Footer />
-      <Alert />
-      <Loading />
     </div>
   )
 }

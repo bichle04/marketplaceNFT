@@ -158,11 +158,21 @@ const ShowNFT = () => {
                     <button className="w-full bg-red-600 text-white py-2 rounded text-sm hover:bg-red-500" onClick={handleEndAuction}>End Auction / Finalize</button>
                   </div>
                 ) : (
-                  // Auction Buyer Controls
-                  <div className="flex space-x-2">
-                    <input type="number" placeholder="Bid Amount (ETH)" className="flex-1 p-2 rounded bg-gray-800 text-white" onChange={(e) => setBidAmount(e.target.value)} />
-                    <button className="bg-indigo-600 px-4 text-white rounded hover:bg-indigo-500" onClick={handleBid}>Place Bid</button>
-                  </div>
+                  // Auction Buyer Controls (Check Expiration)
+                  new Date().getTime() > nft.auction.endAt * 1000 ? (
+                    <div className="p-4 bg-gray-800 rounded border border-yellow-600">
+                      <p className="text-yellow-500 font-bold">Auction Ended</p>
+                      <p className="text-gray-400 text-sm">Bidding period has closed. Waiting for owner to finalize.</p>
+                      {nft.auction.highestBid > 0 && (
+                        <p className="text-white text-xs mt-1">Winner: {truncate(nft.auction.highestBidder, 4, 4, 11)}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex space-x-2">
+                      <input type="number" placeholder="Bid Amount (ETH)" className="flex-1 p-2 rounded bg-gray-800 text-white" onChange={(e) => setBidAmount(e.target.value)} />
+                      <button className="bg-indigo-600 px-4 text-white rounded hover:bg-indigo-500" onClick={handleBid}>Place Bid</button>
+                    </div>
+                  )
                 )
               ) : (
                 connectedAccount === nft?.owner ? (

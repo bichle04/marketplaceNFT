@@ -59,6 +59,7 @@ const structuredNfts = (nfts) => {
       id: Number(nft.id),
       tokenId: Number(nft.tokenId),
       owner: nft.owner.toLowerCase(),
+      from: nft.from ? nft.from.toLowerCase() : '', // Handle empty or new field
       cost: window.web3.utils.fromWei(nft.cost),
       title: nft.title,
       description: nft.description,

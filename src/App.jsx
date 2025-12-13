@@ -16,6 +16,7 @@ import UpdateNFT from './components/UpdateNFT'
 import Marketplace from './pages/Marketplace'
 import Profiles from './pages/Profiles'
 import MysteryBox from './pages/MysteryBox'
+import AuctionPage from './pages/AuctionPage'
 
 
 const App = () => {
@@ -46,6 +47,7 @@ const App = () => {
         />
 
         <Route path="/market" element={<Marketplace />} />
+        <Route path="/auctions" element={<AuctionPage />} />
         <Route path="/profile" element={<Profiles />} />
         <Route path="/mystery-box" element={<MysteryBox />} />
       </Routes>

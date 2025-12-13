@@ -59,12 +59,13 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
         uint256 id;
         uint256 tokenId;
         address owner;
+        address from; // NEW: Sender/Seller address
         uint256 cost;
         string title;
         string description;
-        string metadataURI;
+        string metadataURI; // Kept for frontend
         uint256 timestamp;
-        string msg; // Added transaction type label
+        string msg; // Transaction Type
     }
 
     TransactionStruct[] transactions;
@@ -96,28 +97,30 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
         payTo(owner(), (msg.value - royality));
 
         supply++;
+        totalTx++;
 
         minted.push(
             TransactionStruct(
                 supply,
                 supply, // tokenId is same as id for minted
                 msg.sender,
+                address(0), // from: Minted from zero
                 salesPrice,
                 title,
                 description,
                 metadataURI,
                 block.timestamp,
-                "Minted" // Transaction Type
+                "Minted"
             )
         );
 
         // Also record in transactions history
-        totalTx++;
         transactions.push(
             TransactionStruct(
                 totalTx,
                 supply,
                 msg.sender,
+                address(0), // from
                 salesPrice,
                 title,
                 description,
@@ -132,7 +135,7 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
         _safeMint(msg.sender, supply);
         existingURIs[metadataURI] = 1;
         holderOf[supply] = msg.sender;
-        minters[supply] = msg.sender; // Record creator for royalty
+        minters[supply] = msg.sender;
         isBlindBox[supply] = _isBlindBox;
     }
 
@@ -140,9 +143,7 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
     function revealBox(uint256 id) external {
         require(msg.sender == minted[id - 1].owner, "Only owner can reveal");
         require(isBlindBox[id], "Not a blind box");
-
         isBlindBox[id] = false;
-        // minted[id - 1].metadataURI = newURI; // No longer overwriting URI
     }
 
     function payToBuy(uint256 id) external payable {
@@ -150,26 +151,28 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
             msg.value >= minted[id - 1].cost,
             "Ether too low for purchase!"
         );
-        require(msg.sender != minted[id - 1].owner, "Operation Not Allowed!");
+        require(msg.sender != minted[id - 1].owner, "Owner cannot buy own NFT");
 
         // Feature: Royalty paid to Minter (Creator)
         uint256 royality = (msg.value * royalityFee) / 100;
-        payTo(minters[id], royality); // Changed from 'artist' to 'minters[id]'
-        payTo(minted[id - 1].owner, (msg.value - royality));
+        payTo(minters[id], royality);
+        address seller = minted[id - 1].owner;
+        payTo(seller, (msg.value - royality));
 
         totalTx++;
 
         transactions.push(
             TransactionStruct(
                 totalTx,
-                id, // tokenId matches the NFT id
+                id,
                 msg.sender,
+                seller, // from: Seller
                 msg.value,
                 minted[id - 1].title,
                 minted[id - 1].description,
                 minted[id - 1].metadataURI,
                 block.timestamp,
-                "Sales" // Transaction Type
+                "Sales"
             )
         );
 
@@ -181,18 +184,25 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
             block.timestamp
         );
 
-        _transfer(minted[id - 1].owner, msg.sender, id); // Use internal transfer
+        _transfer(minted[id - 1].owner, msg.sender, id);
         minted[id - 1].owner = msg.sender;
         holderOf[id] = msg.sender;
     }
 
-    // Feature: Transfer NFT
-    function transferNFT(address to, uint256 id) external {
+    function changePrice(uint256 id, uint256 newPrice) external returns (bool) {
+        require(newPrice > 0 ether, "Ether too low!");
+        require(msg.sender == minted[id - 1].owner, "Operation Not Allowed!");
+
+        minted[id - 1].cost = newPrice;
+        return true;
+    }
+
+    function transferNFT(address to, uint256 id) external returns (bool) {
         require(msg.sender == minted[id - 1].owner, "Only owner can transfer");
         require(to != address(0), "Invalid address");
 
         _transfer(msg.sender, to, id);
-        minted[id - 1].owner = to; // Update struct
+        minted[id - 1].owner = to;
         holderOf[id] = to;
 
         // Record Transfer in History
@@ -202,14 +212,17 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
                 totalTx,
                 id,
                 to,
-                0, // 0 cost for transfer
+                msg.sender, // from: Sender
+                0, // 0 cost
                 minted[id - 1].title,
                 minted[id - 1].description,
                 minted[id - 1].metadataURI,
                 block.timestamp,
-                "Transfer" // Transaction Type
+                "Transfer"
             )
         );
+
+        return true;
     }
 
     // Feature: Auction - Create
@@ -280,9 +293,7 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
             minted[tokenId - 1].owner = auction.highestBidder;
             holderOf[tokenId] = auction.highestBidder;
 
-            // Pay seller (Royalty applies?) - Simplified: Pay seller fully or handle royalty?
-            // For simple auction, let's just pay seller minus generic platform fee (optional)
-            // Let's apply standard Royalty to original Creator for consistency
+            // Pay seller (Royalty applies?)
             uint256 royality = (auction.highestBid * royalityFee) / 100;
             payTo(minters[tokenId], royality);
             payTo(auction.seller, auction.highestBid - royality);
@@ -293,13 +304,14 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
                 TransactionStruct(
                     totalTx,
                     tokenId,
-                    auction.highestBidder,
+                    auction.highestBidder, // owner
+                    auction.seller, // from
                     auction.highestBid,
                     minted[tokenId - 1].title,
                     minted[tokenId - 1].description,
                     minted[tokenId - 1].metadataURI,
                     block.timestamp,
-                    "Auction Won" // Transaction Type
+                    "Auction Won"
                 )
             );
             emit AuctionEnded(
@@ -313,14 +325,6 @@ contract TimelessNFT is ERC721Enumerable, Ownable {
             minted[tokenId - 1].owner = auction.seller;
             holderOf[tokenId] = auction.seller;
         }
-    }
-
-    function changePrice(uint256 id, uint256 newPrice) external returns (bool) {
-        require(newPrice > 0 ether, "Ether too low!");
-        require(msg.sender == minted[id - 1].owner, "Operation Not Allowed!");
-
-        minted[id - 1].cost = newPrice;
-        return true;
     }
 
     function payTo(address to, uint256 amount) internal {

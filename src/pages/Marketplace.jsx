@@ -18,7 +18,9 @@ const Marketplace = () => {
     // ===== GET DATA CHO MARKETPLACE HOẶC OWNER =====
     const getFilteredNFTs = () => {
         let data = nfts.filter(
-            (nft) => nft.owner?.toLowerCase() !== connectedAccount?.toLowerCase() && !nft.isBlindBox
+            (nft) => nft.owner?.toLowerCase() !== connectedAccount?.toLowerCase()
+                && !nft.isBlindBox
+                && !nft.auction?.started
         )
 
         // Lọc theo owner khi bấm vào owner
@@ -133,8 +135,8 @@ const Marketplace = () => {
                             <button
                                 key={index}
                                 className={`px-3 py-1 rounded ${currentPage === index + 1
-                                        ? "bg-white text-black"
-                                        : "bg-[#e32970] text-white"
+                                    ? "bg-white text-black"
+                                    : "bg-[#e32970] text-white"
                                     }`}
                                 onClick={() => setCurrentPage(index + 1)}
                             >
@@ -169,9 +171,9 @@ export const Card = ({ nft, setSelectedOwner }) => {
         <div className="w-full shadow-xl shadow-black rounded-md overflow-hidden bg-gray-800 p-3 my-2 flex flex-col h-[320px]">
 
             <img
-                src={nft.metadataURI}
+                src={nft.isBlindBox ? 'https://images.unsplash.com/photo-1632213702844-1e0615781374?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80' : nft.metadataURI}
                 alt={nft.title}
-                className="h-40 w-full object-cover rounded-lg mb-3"
+                className={`h-40 w-full object-cover rounded-lg mb-3 ${nft.isBlindBox ? 'blur-sm grayscale' : ''}`}
             />
 
             <h4 className="text-white font-semibold mb-1">{nft.title}</h4>

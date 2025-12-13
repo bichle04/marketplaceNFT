@@ -3,18 +3,45 @@ import { setGlobalState, useGlobalState } from '../store'
 
 const MysteryBox = () => {
     const [nfts] = useGlobalState('nfts')
+    const [connectedAccount] = useGlobalState('connectedAccount') // Need connectedAccount
     const [end, setEnd] = useState(4)
     const [count] = useState(4)
     const [collection, setCollection] = useState([])
 
-    const getCollection = () => {
-        // Filter ONLY Blind Boxes
-        return nfts.filter(nft => nft.isBlindBox).slice(0, end)
+    // Filter & Search States
+    const [searchText, setSearchText] = useState("")
+    const [sortType, setSortType] = useState("none")
+
+    const getFilteredNFTs = () => {
+        const account = connectedAccount?.toLowerCase()
+
+        // Filter: Is Blind Box + Not Auction + Not Owned
+        let data = nfts.filter(nft =>
+            nft.isBlindBox &&
+            !nft.auction?.started &&
+            nft.owner?.toLowerCase() !== account
+        )
+
+        // Search
+        if (searchText.trim() !== "") {
+            data = data.filter(nft =>
+                nft.title.toLowerCase().includes(searchText.toLowerCase())
+            )
+        }
+
+        // Sort
+        if (sortType === "asc")
+            data = [...data].sort((a, b) => Number(a.cost) - Number(b.cost))
+
+        if (sortType === "desc")
+            data = [...data].sort((a, b) => Number(b.cost) - Number(a.cost))
+
+        return data
     }
 
     useEffect(() => {
-        setCollection(getCollection())
-    }, [nfts, end])
+        setCollection(getFilteredNFTs().slice(0, end))
+    }, [nfts, end, searchText, sortType])
 
     return (
         <div className="bg-[#151c25] gradient-bg-artworks min-h-screen">
@@ -24,17 +51,40 @@ const MysteryBox = () => {
                 </h4>
                 <p className="text-gray-400 mt-2">Unbox unique treasures!</p>
 
+                {/* SEARCH + SORT */}
+                <div className="flex justify-between my-6">
+                    {/* SEARCH BAR */}
+                    <input
+                        type="text"
+                        placeholder="Search Mystery Box..."
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md w-1/2 outline-none border border-gray-700 focus:border-pink-500"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                    />
+
+                    {/* SORT */}
+                    <select
+                        onChange={(e) => setSortType(e.target.value)}
+                        className="bg-gray-800 text-white px-3 py-2 rounded-md outline-none border border-gray-700 focus:border-pink-500"
+                    >
+                        <option value="none">Sort by price</option>
+                        <option value="asc">Price: Low → High</option>
+                        <option value="desc">Price: High → Low</option>
+                    </select>
+                </div>
+
+
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4 lg:gap-3 py-2.5">
                     {collection.length > 0 ? (
                         collection.map((nft, i) => (
                             <Card key={i} nft={nft} />
                         ))
                     ) : (
-                        <p className="text-white mt-5">No Mystery Boxes available currently.</p>
+                        <p className="text-white mt-5">No Mystery Boxes found.</p>
                     )}
                 </div>
 
-                {collection.length > 0 && nfts.filter(nft => nft.isBlindBox).length > collection.length ? (
+                {collection.length > 0 && getFilteredNFTs().length > collection.length ? (
                     <div className="text-center my-5">
                         <button
                             className="shadow-xl shadow-black text-white

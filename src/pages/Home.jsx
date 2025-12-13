@@ -2,6 +2,7 @@ import Hero from '../components/Hero'
 import { Link } from 'react-router-dom'
 import { BiRocket, BiGift } from 'react-icons/bi'
 import { RiAuctionFill } from 'react-icons/ri'
+import { ROUTES } from '../constants'
 
 const Home = () => {
     return (
@@ -98,8 +99,10 @@ const Home = () => {
 
                     </div>
 
+
+
                     <div className="text-center mt-16">
-                        <Link to="/market">
+                        <Link to={ROUTES.MARKETPLACE}>
                             <button className="bg-[#e32970] hover:bg-[#bd255f] text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-pink-500/40 transition-transform hover:scale-105">
                                 Start Exploring Now
                             </button>

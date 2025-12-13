@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ROUTES } from '../constants'
 
 const Footer = () => (
   <div className="w-full flex flex-col justify-between md:justify-center items-center gradient-bg-footer p-4">
@@ -10,10 +11,10 @@ const Footer = () => (
       </div>
 
       <div className="flex flex-1 justify-evenly items-center flex-wrap sm:mt-0 mt-5 w-full text-white text-base text-center">
-        <Link to="/market" className="cursor-pointer hover:text-[#e32970]">Market</Link>
-        <Link to="/auctions" className="cursor-pointer hover:text-[#e32970]">Auctions</Link>
-        <Link to="/mystery-box" className="cursor-pointer hover:text-[#e32970]">Mystery Box</Link>
-        <Link to="/profile" className="cursor-pointer hover:text-[#e32970]">My Profile</Link>
+        <Link to={ROUTES.MARKETPLACE} className="cursor-pointer hover:text-[#e32970]">Market</Link>
+        <Link to={ROUTES.AUCTIONS} className="cursor-pointer hover:text-[#e32970]">Auctions</Link>
+        <Link to={ROUTES.MYSTERY_BOX} className="cursor-pointer hover:text-[#e32970]">Mystery Box</Link>
+        <Link to={ROUTES.PROFILE} className="cursor-pointer hover:text-[#e32970]">My Profile</Link>
       </div>
 
       <div className="flex flex-[0.25] justify-center items-center">

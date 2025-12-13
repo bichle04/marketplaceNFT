@@ -14,6 +14,8 @@ import MysteryBox from './pages/MysteryBox'
 import AuctionPage from './pages/AuctionPage'
 import Home from './pages/Home'
 
+import { ROUTES } from './constants'
+
 const App = () => {
   useEffect(() => {
     const loadData = async () => {
@@ -32,11 +34,11 @@ const App = () => {
       {/* Main Content */}
       <div className="flex-grow">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/market" element={<Marketplace />} />
-          <Route path="/auctions" element={<AuctionPage />} />
-          <Route path="/profile" element={<Profiles />} />
-          <Route path="/mystery-box" element={<MysteryBox />} />
+          <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.MARKETPLACE} element={<Marketplace />} />
+          <Route path={ROUTES.AUCTIONS} element={<AuctionPage />} />
+          <Route path={ROUTES.PROFILE} element={<Profiles />} />
+          <Route path={ROUTES.MYSTERY_BOX} element={<MysteryBox />} />
         </Routes>
       </div>
 
